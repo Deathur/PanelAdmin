@@ -174,15 +174,20 @@ catch (PDOException $e) {
             echo '
             <form method="POST">
                 <label for="">Nom</label>
-                <input type="text" name="nomCreate">
+                <input type="text" name="nomCreate" required>
+                <br>
                 <label for="">Prenom</label>
-                <input type="text" name="prenomCreate">
+                <input type="text" name="prenomCreate" required>
+                <br>
                 <label for="">Age</label>
-                <input type="text" name="ageCreate">
+                <input type="text" name="ageCreate" required>
+                <br>
                 <label for="">Mail</label>
-                <input type="text" name="mailCreate">
+                <input type="text" name="mailCreate" required>
+                <br>
                 <label for="">Mot de passe</label>
-                <input type="text" name="passwordCreate">
+                <input type="text" name="passwordCreate" required>
+                <br>
                 <input type="submit" name="submitCreate" value="Créer mon compte">
             </form>
             ';
@@ -200,6 +205,7 @@ catch (PDOException $e) {
             $sqlCreate = "INSERT INTO `users`(`nom_user`, `prenom_user`, `age_user`, `mail_user`, `password_user`) VALUES ('$nomCreate','$prenomCreate','$ageCreate','$mailCreate','$hachedPasswordCreate')";
             $stmtCreate = $pdo->prepare($sqlCreate);
             $stmtCreate->execute();
+            header("Location: index.php");
         }
         
     ?>
