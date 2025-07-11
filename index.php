@@ -16,7 +16,6 @@ catch (PDOException $e) {
     echo "Erreur de connexion : " . $e->getMessage();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +41,9 @@ catch (PDOException $e) {
                 <br>
                 <input type="submit" name="submitConnect" value="Se connecter">
             </form>
+            <p><a href="?page=createAccount">Créer un compte</a><p>
             ';
+            
         }
         else {
             echo "Bonjour, " . $_SESSION['user']['nom_user'] . " " . $_SESSION['user']['prenom_user'] . ". Vous êtes connectés";
@@ -75,19 +76,21 @@ catch (PDOException $e) {
             $identifiant = $_POST['identifiant'];
             $password = $_POST['password'];
             
+
+
             $sql = "SELECT * FROM `users` WHERE mail_user = '$identifiant'";
             $stmt = $pdo->prepare($sql);
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             if($results){
-                if ($password == $results[0]['password_user']){
+                if (password_verify($password, $results[0]['password_user'])){
                     $_SESSION['user'] = [
-                        "id_user" => $results[0]["id_user"],
-                        "nom_user" => $results[0]["nom_user"],
-                        "prenom_user" => $results[0]["prenom_user"],
-                        "age_user" => $results[0]["age_user"],
-                        "mail_user" => $results[0]["mail_user"],
+                        "id_user" => htmlspecialchars($results[0]["id_user"]),
+                        "nom_user" => htmlspecialchars($results[0]["nom_user"]),
+                        "prenom_user" => htmlspecialchars($results[0]["prenom_user"]),
+                        "age_user" => htmlspecialchars($results[0]["age_user"]),
+                        "mail_user" => htmlspecialchars($results[0]["mail_user"]),
                     ];
                     header("Location: index.php");
                     $id = $_GET['id'];
@@ -131,19 +134,19 @@ catch (PDOException $e) {
             
             echo '<form method="POST">
             <label for="">Nom</label>
-            <input type="text" name="nomUpdate" value="' . $resultsId[0]['nom_user'] . '">
+            <input type="text" name="nomUpdate" value="' . htmlspecialchars($resultsId[0]['nom_user']) . '">
             <br>
             <label for="">Prénom</label>
-            <input type="text" name="prenomUpdate" value="' . $resultsId[0]['prenom_user'] . '">
+            <input type="text" name="prenomUpdate" value="' . htmlspecialchars($resultsId[0]['prenom_user']) . '">
             <br>
             <label for="">Age</label>
-            <input type="text" name="ageUpdate" value="' . $resultsId[0]['age_user'] . '">
+            <input type="text" name="ageUpdate" value="' . htmlspecialchars($resultsId[0]['age_user']) . '">
             <br>
             <label for="">Mail</label>
-            <input type="text" name="mailUpdate" value="' . $resultsId[0]['mail_user'] . '">
+            <input type="text" name="mailUpdate" value="' . htmlspecialchars($resultsId[0]['mail_user']) . '">
             <br>
             <label for="">Mot de passe</label>
-            <input type="text" name="passwordUpdate" value="' . $resultsId[0]['password_user'] . '">
+            <input type="text" name="passwordUpdate" value="">
             <br>
             <input type="submit" name="submitUpdate" Value="Mettre à jour la BDD">
             </form>';
@@ -157,14 +160,49 @@ catch (PDOException $e) {
             $ageUpdate = $_POST['ageUpdate'];
             $mailUpdate = $_POST['mailUpdate'];
             $passwordUpdate = $_POST['passwordUpdate'];
+
+            $hachedPasswordUpdate = password_hash($passwordUpdate, PASSWORD_DEFAULT);
             
 
-            $sqlUpdate = "UPDATE `users` SET `nom_user`='$nomUpdate',`prenom_user`='$prenomUpdate',`age_user`='$ageUpdate',`mail_user`='$mailUpdate',`password_user`='$passwordUpdate' WHERE `id_user` = '$idUpdate'";
+            $sqlUpdate = "UPDATE `users` SET `nom_user`='$nomUpdate',`prenom_user`='$prenomUpdate',`age_user`='$ageUpdate',`mail_user`='$mailUpdate',`password_user`='$hachedPasswordUpdate' WHERE `id_user` = '$idUpdate'";
             $stmtUpdate = $pdo->prepare($sqlUpdate);
             $stmtUpdate->execute();
             header("Location: index.php");
         }
         
+        if (isset($_GET['page']) && ($_GET['page'] == 'createAccount')){
+            echo '
+            <form method="POST">
+                <label for="">Nom</label>
+                <input type="text" name="nomCreate">
+                <label for="">Prenom</label>
+                <input type="text" name="prenomCreate">
+                <label for="">Age</label>
+                <input type="text" name="ageCreate">
+                <label for="">Mail</label>
+                <input type="text" name="mailCreate">
+                <label for="">Mot de passe</label>
+                <input type="text" name="passwordCreate">
+                <input type="submit" name="submitCreate" value="Créer mon compte">
+            </form>
+            ';
+        }
+
+        if (isset($_POST['submitCreate'])){
+            $nomCreate = $_POST['nomCreate'];
+            $prenomCreate = $_POST['prenomCreate'];
+            $ageCreate = $_POST['ageCreate'];
+            $mailCreate = $_POST['mailCreate'];
+            $passwordCreate = $_POST['passwordCreate'];
+
+            $hachedPasswordCreate = password_hash($passwordCreate, PASSWORD_DEFAULT);
+
+            $sqlCreate = "INSERT INTO `users`(`nom_user`, `prenom_user`, `age_user`, `mail_user`, `password_user`) VALUES ('$nomCreate','$prenomCreate','$ageCreate','$mailCreate','$hachedPasswordCreate')";
+            $stmtCreate = $pdo->prepare($sqlCreate);
+            $stmtCreate->execute();
+        }
+        
     ?>
+    
 </body>
 </html>
