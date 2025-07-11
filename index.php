@@ -2,7 +2,7 @@
 session_start();
 
 $host = 'localhost';
- $dbname = 'bddpaneladmin';
+$dbname = 'bddpaneladmin';
 $user = 'root';
 $password = '';
 
