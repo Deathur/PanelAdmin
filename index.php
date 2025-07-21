@@ -164,9 +164,9 @@ catch (PDOException $e) {
             $hachedPasswordUpdate = password_hash($passwordUpdate, PASSWORD_DEFAULT);
             
 
-            $sqlUpdate = "UPDATE `users` SET `nom_user`='$nomUpdate',`prenom_user`='$prenomUpdate',`age_user`='$ageUpdate',`mail_user`='$mailUpdate',`password_user`='$hachedPasswordUpdate' WHERE `id_user` = '$idUpdate'";
+            $sqlUpdate = "UPDATE `users` SET `nom_user`=?,`prenom_user`=?,`age_user`=?,`mail_user`=?,`password_user`=? WHERE `id_user` = '$idUpdate'";
             $stmtUpdate = $pdo->prepare($sqlUpdate);
-            $stmtUpdate->execute();
+            $stmtUpdate->execute([$nomUpdate, $prenomUpdate, $ageUpdate, $mailUpdate, $hachedPasswordUpdate]);
             header("Location: index.php");
         }
         
