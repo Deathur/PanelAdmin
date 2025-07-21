@@ -202,8 +202,15 @@ catch (PDOException $e) {
 
             $hachedPasswordCreate = password_hash($passwordCreate, PASSWORD_DEFAULT);
 
-            $sqlCreate = "INSERT INTO `users`(`nom_user`, `prenom_user`, `age_user`, `mail_user`, `password_user`) VALUES ('$nomCreate','$prenomCreate','$ageCreate','$mailCreate','$hachedPasswordCreate')";
+            $sqlCreate = "INSERT INTO `users`(`nom_user`, `prenom_user`, `age_user`, `mail_user`, `password_user`) VALUES (:nom,:prenom,:age,:mail,:password)";
             $stmtCreate = $pdo->prepare($sqlCreate);
+
+            $stmtCreate->bindParam(':nom', $nomCreate);
+            $stmtCreate->bindParam(':prenom', $prenomCreate);
+            $stmtCreate->bindParam(':age', $ageCreate);
+            $stmtCreate->bindParam(':mail', $mailCreate);
+            $stmtCreate->bindParam(':password', $hachedPasswordCreate);
+
             $stmtCreate->execute();
             header("Location: index.php");
         }
