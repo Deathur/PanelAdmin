@@ -167,6 +167,15 @@ catch (PDOException $e) {
             $sqlUpdate = "UPDATE `users` SET `nom_user`=?,`prenom_user`=?,`age_user`=?,`mail_user`=?,`password_user`=? WHERE `id_user` = '$idUpdate'";
             $stmtUpdate = $pdo->prepare($sqlUpdate);
             $stmtUpdate->execute([$nomUpdate, $prenomUpdate, $ageUpdate, $mailUpdate, $hachedPasswordUpdate]);
+
+            $_SESSION['user'] = [
+                "id_user" => $idUpdate,
+                "nom_user" => $nomUpdate,
+                "prenom_user" => $prenomUpdate,
+                "age_user" => $ageUpdate,
+                "mail_user" => $mailUpdate,
+            ];
+
             header("Location: index.php");
         }
         
